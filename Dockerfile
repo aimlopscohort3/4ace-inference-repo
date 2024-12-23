@@ -27,8 +27,8 @@ USER appuser
 # Expose the application port
 EXPOSE 8080
 
-# Set the entrypoint for flexibility
-ENTRYPOINT ["uvicorn"]
+# # Set the entrypoint for flexibility
+# ENTRYPOINT ["uvicorn"]
 
 # Set the default command
-CMD ["app.main:app", "--host", "0.0.0.0", "--port", "8080", "--workers", "2"]
+CMD ["app.main:app", "--port", "8080"]
