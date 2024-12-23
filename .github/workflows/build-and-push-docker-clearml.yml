@@ -29,7 +29,7 @@ jobs:
       # Step 3: Build the Docker image using a specific Dockerfile
       - name: Build Docker image
         run: |
-          docker build -f Dockerfile.clearml -t ${{ secrets.DOCKER_USERNAME }}/4ace-inference:${VERSION} .
+          docker build -f Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/4ace-inference:${VERSION} .
 
       # Step 4: Push the Docker image to Docker Hub
       - name: Push Docker image to Docker Hub
