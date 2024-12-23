@@ -1,0 +1,9 @@
+transformers
+torch
+fastapi
+uvicorn
+nltk
+rouge-score
+prometheus-client
+jinja2
+python-multipart
