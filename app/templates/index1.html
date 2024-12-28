@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPT-2 Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        #chat-container {
+            width: 60%;
+            max-width: 800px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        #chat-box {
+            height: 500px;
+            overflow-y: auto;
+            padding: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        #input-container {
+            display: flex;
+            padding: 10px;
+        }
+        #user-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        #send-button {
+            margin-left: 10px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #send-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<div id="chat-container">
+    <div id="chat-box">
+        <p><em>Welcome! Click 'Start' to begin a conversation.</em></p>
+    </div>
+    <div id="input-container">
+        <input type="text" id="user-input" placeholder="Type your message here..." disabled>
+        <button id="send-button" onclick="sendMessage()" disabled>Send</button>
+    </div>
+    <button onclick="startConversation()">Start Conversation</button>
+</div>
+
+<script>
+    let sessionId = null;
+
+    // Start a new conversation
+    async function startConversation() {
+        const response = await fetch('/start/', {
+            method: 'POST',
+        });
+
+        const data = await response.json();
+        sessionId = data.session_id;
+
+        const chatBox = document.getElementById('chat-box');
+        chatBox.innerHTML += `<p><strong>Bot:</strong> ${data.message}</p>`;
+        
+        // Enable input fields
+        document.getElementById('user-input').disabled = false;
+        document.getElementById('send-button').disabled = false;
+    }
+
+    // Send message to the backend
+    async function sendMessage() {
+        const userInput = document.getElementById('user-input').value;
+
+        if (!userInput) return;
+
+        // Append user message to the chat box
+        const chatBox = document.getElementById('chat-box');
+        chatBox.innerHTML += `<p><strong>You:</strong> ${userInput}</p>`;
+        document.getElementById('user-input').value = '';
+
+        // Call the FastAPI /chat endpoint
+        const response = await fetch('/chat/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                prompt: userInput,
+                session_id: sessionId,
+            }),
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            chatBox.innerHTML += `<p><strong>Bot:</strong> ${data.response}</p>`;
+        } else {
+            chatBox.innerHTML += `<p><strong>Bot:</strong> Error: Failed to get response.</p>`;
+        }
+
+        // Scroll to bottom
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+</script>
+
+</body>
+</html>
